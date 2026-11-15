@@ -2,32 +2,18 @@
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>할머니의 레시피</title>
 <style>
-  :root {
-    --bg: #eef1f2;
-    --tri: #8fb0bb;
-    --tri-off: #cfdbe0;
-    --dot: #cfdbe0;
-    --dot-on: #e0a3ad;
-  }
+  :root { --tri: #7f9faa; }
   * { box-sizing: border-box; }
-  html, body { height: 100%; margin: 0; }
-  body {
-    background: var(--bg);
-    display: flex; flex-direction: column;
-    align-items: center; justify-content: center;
-    gap: 14px; padding: 16px;
-  }
+  html, body { height: 100%; margin: 0; background: #fffdf8; overflow: hidden; }
+  body { display: grid; place-items: center; }
   .book {
-    width: min(1000px, 100%, calc((100dvh - 110px) * 2223 / 1465));
-    aspect-ratio: 2223 / 1465;
+    container-type: inline-size;
     position: relative;
-    border-radius: 6px;
-    overflow: hidden;
-    box-shadow: 0 6px 22px rgba(60, 80, 90, .22);
-    background: #fffdf8;
+    width: min(100vw, calc(100dvh * 2223 / 1465));
+    aspect-ratio: 2223 / 1465;
     touch-action: pan-y;
   }
   .book img {
@@ -39,27 +25,28 @@
     user-select: none; -webkit-user-drag: none;
   }
   .book img.on { opacity: 1; }
-  .nav { display: flex; align-items: center; gap: 28px; height: 48px; }
+  .nav {
+    position: absolute; left: 1.5cqw; right: 1.5cqw; bottom: 1.5cqw;
+    display: flex; justify-content: space-between;
+    pointer-events: none;
+  }
   .arrow {
-    width: 48px; height: 48px; border: 0; padding: 0;
-    background: none; cursor: pointer;
+    width: max(44px, 6cqw); height: max(44px, 6cqw);
+    border: 0; padding: 0; background: none; cursor: pointer;
     display: grid; place-items: center;
+    pointer-events: auto;
   }
   .arrow::before {
     content: ""; width: 0; height: 0;
-    border-top: 12px solid transparent; border-bottom: 12px solid transparent;
+    border-top: max(9px, 1.4cqw) solid transparent;
+    border-bottom: max(9px, 1.4cqw) solid transparent;
+    filter: drop-shadow(0 0 2px rgba(255, 255, 255, .9));
   }
-  .arrow.prev::before { border-right: 19px solid var(--tri); }
-  .arrow.next::before { border-left: 19px solid var(--tri); }
-  .arrow:disabled { cursor: default; }
-  .arrow.prev:disabled::before { border-right-color: var(--tri-off); }
-  .arrow.next:disabled::before { border-left-color: var(--tri-off); }
-  .arrow:focus-visible { outline: 2px solid var(--dot-on); outline-offset: 2px; border-radius: 8px; }
-  .dots { display: flex; gap: 10px; }
-  .dots i { width: 9px; height: 9px; border-radius: 50%; background: var(--dot); }
-  .dots i.on { background: var(--dot-on); }
+  .arrow.prev::before { border-right: max(15px, 2.2cqw) solid var(--tri); }
+  .arrow.next::before { border-left: max(15px, 2.2cqw) solid var(--tri); }
+  .arrow:disabled { visibility: hidden; }
+  .arrow:focus-visible { outline: 2px solid var(--tri); outline-offset: -4px; border-radius: 8px; }
   @media (prefers-reduced-motion: reduce) { .book img { transition: none; } }
-  @media (prefers-color-scheme: dark) { :root { --bg: #2b3236; --tri-off: #44525a; --dot: #44525a; } }
 </style>
 </head>
 <body>
@@ -69,17 +56,15 @@
   <img src="images/step2.jpg" alt="2. 파이지 만들기">
   <img src="images/step3.jpg" alt="3. 파이 굽기">
   <img src="images/final.jpg" alt="마지막 장">
-</main>
 
-<nav class="nav" aria-label="페이지 이동">
-  <button class="arrow prev" aria-label="이전 페이지"></button>
-  <div class="dots" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>
-  <button class="arrow next" aria-label="다음 페이지"></button>
-</nav>
+  <nav class="nav" aria-label="페이지 이동">
+    <button class="arrow prev" aria-label="이전 페이지"></button>
+    <button class="arrow next" aria-label="다음 페이지"></button>
+  </nav>
+</main>
 
 <script>
   const pages = document.querySelectorAll(".book img");
-  const dots = document.querySelectorAll(".dots i");
   const prev = document.querySelector(".prev");
   const next = document.querySelector(".next");
   let i = 0;
@@ -87,7 +72,6 @@
   function show(n) {
     i = Math.max(0, Math.min(pages.length - 1, n));
     pages.forEach((p, k) => p.classList.toggle("on", k === i));
-    dots.forEach((d, k) => d.classList.toggle("on", k === i));
     prev.disabled = i === 0;
     next.disabled = i === pages.length - 1;
   }
